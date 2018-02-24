@@ -13,15 +13,14 @@ public class EthernetFrame {
   public static final int HEADER_SIZE = 14;
 
   private final ByteBuffer buffer;
-  private final ByteBuffer view;
 
   private final ARPPacket arpPacket;
   private final IPPacket ipPacket;
 
   public EthernetFrame(ByteBuffer buffer) {
     this.buffer = buffer;
-    this.view = buffer.duplicate();
     this.buffer.order(ByteOrder.BIG_ENDIAN);
+    final ByteBuffer view = buffer.duplicate();
     view.position(buffer.position() + HEADER_SIZE);
     this.arpPacket = new ARPPacket(view.slice());
     this.ipPacket = new IPPacket(view.slice());
@@ -49,7 +48,7 @@ public class EthernetFrame {
     return EtherType.fromShort(buffer.getShort(ETHER_TYPE_OFFSET));
   }
 
-  public EthernetFrame withEtherType(EtherType type) {
+  EthernetFrame withEtherType(EtherType type) {
     buffer.putShort(ETHER_TYPE_OFFSET, type.value());
     return this;
   }
@@ -57,7 +56,7 @@ public class EthernetFrame {
   void complete() {
     final int size;
     if (etherType() == EtherType.ARP) {
-      size = HEADER_SIZE + arpPacket.PACKET_SIZE;
+      size = HEADER_SIZE + ARPPacket.PACKET_SIZE;
     } else {
       size = HEADER_SIZE;
     }
@@ -107,14 +106,14 @@ public class EthernetFrame {
   }
 
   public enum EtherType {
-    IP_V4(0x0800),
-    ARP(0x806),
-    UNSUPPORTED(0xFFFF);
+    IP_V4((short) 0x0800),
+    ARP((short) 0x0806),
+    UNSUPPORTED((short) 0xFFFF);
 
     private final short value;
 
-    EtherType(int value) {
-      this.value = (short) value;
+    EtherType(short value) {
+      this.value = value;
     }
 
     public short value() {

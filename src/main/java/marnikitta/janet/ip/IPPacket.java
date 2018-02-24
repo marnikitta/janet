@@ -38,7 +38,7 @@ public class IPPacket {
 
   IPPacket withTotalLength() {
     final int size = buffer.remaining();
-    if (size > 0xFFFFFFFF) {
+    if (0 <= size && size <= 0xFFFF) {
       buffer.putShort(TOTAL_LENGTH_OFFSET, (short) size);
       return this;
     } else {
@@ -112,7 +112,7 @@ public class IPPacket {
       protocol(),
       headerChecksum(),
       niceIP(sourceAdderess()),
-      niceIP(destinationAddress(
+      niceIP(destinationAddress())
     );
   }
 

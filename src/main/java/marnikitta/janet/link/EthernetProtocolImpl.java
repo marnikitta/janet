@@ -31,10 +31,11 @@ public class EthernetProtocolImpl implements EthernetProtocol {
   }
 
   @Override
-  public void commit(long dest, EthernetFrame frame) {
+  public void commit(long dest, EthernetFrame.EtherType etherType, EthernetFrame frame) {
     frame
       .withDestinationLinkAddress(dest)
       .withSourceLinkAddress(localLinkAddress)
+      .withEtherType(etherType)
       .complete();
     try {
       System.out.println("Out: " + frame + ' ' + frame.dump());
