@@ -21,7 +21,7 @@ public class Test {
 
     final EthernetProtocol ethernetProtocol = new EthernetProtocolImpl(localLinkAddress, tunTap);
     final ARPProtocol arpProtocol = new ARPProtocolImpl(localLinkAddress, localNetworkAddress, ethernetProtocol);
-    final IPProtocol ipProtocol = new IPProtocolImpl();
+    final IPProtocol ipProtocol = new IPProtocolImpl(ethernetProtocol, arpProtocol, localNetworkAddress);
 
     ethernetProtocol.registerProtocol(EthernetFrame.EtherType.ARP, arpProtocol);
     ethernetProtocol.registerProtocol(EthernetFrame.EtherType.IP_V4, ipProtocol);

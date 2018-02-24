@@ -5,14 +5,15 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class IPPacket {
-  public static final int VERSION_OFFSET = 0;
-  public static final int TOTAL_LENGTH_OFFSET = 2;
-  public static final int IDENTIFICATION_OFFSET = 4;
+  private static final int VERSION_OFFSET = 0;
+  private static final int TOTAL_LENGTH_OFFSET = 2;
+  private static final int IDENTIFICATION_OFFSET = 4;
   private static final int TTL_OFFSET = 8;
   private static final int PROTOCOL_OFFSET = 9;
   private static final int HEADER_CHECKSUM_OFFSET = 10;
   private static final int SOURCE_ADDRESS_OFFSET = 12;
   private static final int DESTINATION_ADDRESS_OFFSET = 16;
+
   private final ByteBuffer buffer;
 
   public IPPacket(ByteBuffer buffer) {
@@ -20,30 +21,28 @@ public class IPPacket {
   }
 
   public byte version() {
-    return (byte) (0xF0 & buffer.get(VERSION_OFFSET));
+    return (byte) ((0xF0 & buffer.get(VERSION_OFFSET)) >> 4);
   }
 
   public byte headerLength() {
     return (byte) (0x0F & buffer.get(VERSION_OFFSET));
   }
 
-  IPPacket withHeaderLength() {
-    buffer.put(VERSION_OFFSET, (byte) 0x45);
-    return this;
-  }
-
   public int totalLength() {
     return Short.toUnsignedInt(buffer.getShort(TOTAL_LENGTH_OFFSET));
   }
 
-  IPPacket withTotalLength() {
+  void complete() {
+    buffer.put(VERSION_OFFSET, (byte) 0x45);
+
     final int size = buffer.remaining();
     if (0 <= size && size <= 0xFFFF) {
       buffer.putShort(TOTAL_LENGTH_OFFSET, (short) size);
-      return this;
     } else {
       throw new IllegalArgumentException("IP overflow");
     }
+
+    // TODO: 2/24/18 header checksum
   }
 
   public short identification() {
@@ -77,11 +76,6 @@ public class IPPacket {
     return buffer.getShort(HEADER_CHECKSUM_OFFSET);
   }
 
-  IPPacket withHeaderChecksum() {
-    // TODO: 2/24/18
-    return this;
-  }
-
   public int sourceAdderess() {
     return buffer.getInt(SOURCE_ADDRESS_OFFSET);
   }
@@ -103,11 +97,9 @@ public class IPPacket {
   @Override
   public String toString() {
     return String.format(
-      "IP(ver: %x, hdr: %x, tot: %d, id: %x, ttl: %d, prot: %s, cs: %x, src: %s, dst: %s)",
-      version(),
-      headerLength(),
+      "IPv4(length: %d, id: %d, ttl: %d, proto: %s, checksum: %x, src: %s, dst: %s)",
       totalLength(),
-      identification(),
+      Short.toUnsignedInt(identification()),
       ttl(),
       protocol(),
       headerChecksum(),

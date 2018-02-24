@@ -14,8 +14,8 @@ public class EthernetProtocolImpl implements EthernetProtocol {
   private final long localLinkAddress;
   private final ByteChannel channel;
   private final ByteBuffer sendBuffer = ByteBuffer.allocateDirect(1500).order(ByteOrder.BIG_ENDIAN);
-  private EthernetFrame sendFrame = new EthernetFrame(sendBuffer);
 
+  private EthernetFrame sendFrame = new EthernetFrame(sendBuffer);
 
   public EthernetProtocolImpl(long localLinkAddress, ByteChannel channel) {
     this.localLinkAddress = localLinkAddress;
@@ -24,8 +24,9 @@ public class EthernetProtocolImpl implements EthernetProtocol {
   }
 
   @Override
-  public EthernetFrame next(int size) {
+  public EthernetFrame next() {
     final EthernetFrame frame = sendFrame;
+    //noinspection AssignmentToNull
     sendFrame = null;
     return frame;
   }
@@ -48,18 +49,19 @@ public class EthernetProtocolImpl implements EthernetProtocol {
 
   @Override
   public <PU> void registerProtocol(EthernetFrame.EtherType type, Consumer<PU> protocol) {
+    //noinspection unchecked
     protocols.put(type, (Consumer<Object>) protocol);
   }
 
   @Override
   public void accept(EthernetFrame frame) {
-    System.out.println("In: " + frame + ' ' + frame.dump());
     switch (frame.etherType()) {
       case ARP:
         protocols.get(EthernetFrame.EtherType.ARP).accept(frame.arpPacket());
         break;
       case IP_V4:
         protocols.get(EthernetFrame.EtherType.IP_V4).accept(frame.ipPacket());
+        break;
       default:
         break;
     }
@@ -70,7 +72,7 @@ public class EthernetProtocolImpl implements EthernetProtocol {
     try {
       final ByteBuffer recieveBuffer = ByteBuffer.allocateDirect(1500);
       final EthernetFrame frame = new EthernetFrame(recieveBuffer);
-      int read = 0;
+      int read;
 
       //noinspection NestedAssignment
       while ((read = channel.read(recieveBuffer)) >= 0) {
@@ -80,10 +82,11 @@ public class EthernetProtocolImpl implements EthernetProtocol {
 
           recieveBuffer.rewind();
         }
+        // TODO: 2/24/18 Busy spin
         Thread.sleep(1000);
       }
     } catch (InterruptedException | IOException e) {
-      e.printStackTrace();
+      throw new RuntimeException(e);
     }
   }
 }

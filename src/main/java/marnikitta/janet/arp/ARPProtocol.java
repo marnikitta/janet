@@ -5,5 +5,5 @@ import java.util.function.Consumer;
 public interface ARPProtocol extends Consumer<ARPPacket> {
   void request(int networkAddress);
 
-  long getMapping(int networkAddress);
+  long linkAddressFor(int networkAddress);
 }

@@ -23,7 +23,7 @@ public class ARPProtocolImpl implements ARPProtocol {
 
   @Override
   public void request(int networkAddress) {
-    final EthernetFrame next = ethernetProtocol.next(1500);
+    final EthernetFrame next = ethernetProtocol.next();
 
     next.arpPacket()
       .withProtocol()
@@ -32,21 +32,22 @@ public class ARPProtocolImpl implements ARPProtocol {
       .withSenderProtocolAddress(localNetworkAddress)
       .withTargetHardwareAddress(0)
       .withTargetProtocolAddress(networkAddress);
-    ethernetProtocol.commit(0xffffffff, EthernetFrame.EtherType.ARP, next);
+    ethernetProtocol.commit(0xFFFFFFFF, EthernetFrame.EtherType.ARP, next);
   }
 
   @Override
-  public long getMapping(int networkAddress) {
+  public long linkAddressFor(int networkAddress) {
     return arpCache.getOrDefault(networkAddress, -1L);
   }
 
   @Override
   public void accept(ARPPacket packet) {
+    System.out.println(packet);
     if (packet.operation() == ARPPacket.Operation.RESPONSE) {
       arpCache.put(packet.senderProtocolAddress(), packet.senderHardwareAddress());
     } else if (packet.operation() == ARPPacket.Operation.REQUEST
       && packet.targetProtocolAddress() == localNetworkAddress) {
-      final EthernetFrame next = ethernetProtocol.next(1500);
+      final EthernetFrame next = ethernetProtocol.next();
 
       next.arpPacket()
         .withProtocol()
