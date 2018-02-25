@@ -1,5 +1,7 @@
 package marnikitta.janet.arp;
 
+import gnu.trove.map.TIntLongMap;
+import gnu.trove.map.hash.TIntLongHashMap;
 import marnikitta.janet.link.EthernetFrame;
 import marnikitta.janet.link.EthernetProtocol;
 
@@ -10,8 +12,7 @@ public class ARPProtocolImpl implements ARPProtocol {
   private final long localLinkAddress;
   private final int localNetworkAddress;
   private final EthernetProtocol ethernetProtocol;
-  // FIXME: 2/24/18 Primitive collection
-  private final Map<Integer, Long> arpCache = new HashMap<>();
+  private final TIntLongMap arpCache = new TIntLongHashMap();
 
   public ARPProtocolImpl(long localLinkAddress,
                          int localNetworkAddress,
@@ -37,7 +38,11 @@ public class ARPProtocolImpl implements ARPProtocol {
 
   @Override
   public long linkAddressFor(int networkAddress) {
-    return arpCache.getOrDefault(networkAddress, -1L);
+    if(arpCache.containsKey(networkAddress)) {
+      return arpCache.get(networkAddress);
+    } else {
+      return -1;
+    }
   }
 
   @Override
