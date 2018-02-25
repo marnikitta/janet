@@ -20,6 +20,11 @@ public class IPProtocolImpl implements IPProtocol {
 
   @Override
   public void accept(IPPacket ipPacket) {
+    if (ipPacket.hasValidChecksum()) {
+      System.out.println("WIN");
+    } else {
+      System.out.println("OOPS");
+    }
     System.out.println(ipPacket);
   }
 

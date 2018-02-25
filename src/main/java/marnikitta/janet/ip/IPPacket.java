@@ -41,8 +41,7 @@ public class IPPacket {
     } else {
       throw new IllegalArgumentException("IP overflow");
     }
-
-    // TODO: 2/24/18 header checksum
+    buffer.putShort(HEADER_CHECKSUM_OFFSET, evalChecksum());
   }
 
   public short identification() {
@@ -92,6 +91,23 @@ public class IPPacket {
   IPPacket withDestinationAddress(int address) {
     buffer.putInt(DESTINATION_ADDRESS_OFFSET, address);
     return this;
+  }
+
+  public boolean hasValidChecksum() {
+    return headerChecksum() == evalChecksum();
+  }
+
+  private short evalChecksum() {
+    final int length = headerLength();
+    int partialSum = 0;
+    for (int i = 0; i < length * 2; ++i) {
+      if (i != 5) {
+        final short word = buffer.getShort(i * Short.BYTES);
+        partialSum += Short.toUnsignedInt(word);
+      }
+    }
+    final int result = (partialSum & 0xFFFF) + (partialSum >>> Short.SIZE & 0xFFFF);
+    return (short)~result;
   }
 
   @Override

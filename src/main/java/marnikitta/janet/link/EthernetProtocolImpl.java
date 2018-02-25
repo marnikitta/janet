@@ -60,6 +60,7 @@ public class EthernetProtocolImpl implements EthernetProtocol {
         protocols.get(EthernetFrame.EtherType.ARP).accept(frame.arpPacket());
         break;
       case IP_V4:
+        System.out.println(frame.dump());
         protocols.get(EthernetFrame.EtherType.IP_V4).accept(frame.ipPacket());
         break;
       default:
@@ -70,17 +71,17 @@ public class EthernetProtocolImpl implements EthernetProtocol {
   @Override
   public void run() {
     try {
-      final ByteBuffer recieveBuffer = ByteBuffer.allocateDirect(1500);
-      final EthernetFrame frame = new EthernetFrame(recieveBuffer);
+      final ByteBuffer receiveBuffer = ByteBuffer.allocateDirect(1500);
+      final EthernetFrame frame = new EthernetFrame(receiveBuffer);
       int read;
 
       //noinspection NestedAssignment
-      while ((read = channel.read(recieveBuffer)) >= 0) {
+      while ((read = channel.read(receiveBuffer)) >= 0) {
         if (read != 0) {
-          recieveBuffer.flip();
+          receiveBuffer.flip();
           accept(frame);
 
-          recieveBuffer.rewind();
+          receiveBuffer.rewind();
         }
         // TODO: 2/24/18 Busy spin
         Thread.sleep(1000);
