@@ -64,22 +64,25 @@ int tun_alloc(char *dev, int flags) {
 /*
  * Class:     marnikitta_janet_tuntap_TunTap
  * Method:    initTap
- * Signature: ()I
+ * Signature: (Ljava/lang/String;)I
  */
-JNIEXPORT jint JNICALL Java_marnikitta_janet_tuntap_TunTap_initTap (JNIEnv * env, jclass j) {
-  char tun_name[IFNAMSIZ];
-  strcpy(tun_name, "tun2");
-  return tun_alloc(tun_name, IFF_TAP | IFF_NO_PI);
+JNIEXPORT jint JNICALL Java_marnikitta_janet_tuntap_TunTap_initTap (JNIEnv * env, jclass clazz, jstring tapName) {
+  char tap_name[IFNAMSIZ];
+  const char *nativeString = (*env)->GetStringUTFChars(env, tapName, 0);
+  strcpy(tap_name, nativeString);
+  (*env)->ReleaseStringUTFChars(env, tapName, nativeString);
+  return tun_alloc(tap_name, IFF_TAP | IFF_NO_PI);
 }
 
 /*
  * Class:     marnikitta_janet_tuntap_TunTap
  * Method:    initTun
- * Signature: ()I
+ * Signature: (Ljava/lang/String;)I
  */
-JNIEXPORT jint JNICALL Java_marnikitta_janet_tuntap_TunTap_initTun (JNIEnv * env, jclass j) {
+JNIEXPORT jint JNICALL Java_marnikitta_janet_tuntap_TunTap_initTun (JNIEnv * env, jclass clazz, jstring tunName) {
   char tun_name[IFNAMSIZ];
-  strcpy(tun_name, "tun2");
+  const char *nativeString = (*env)->GetStringUTFChars(env, tunName, 0);
+  strcpy(tun_name, nativeString);
+  (*env)->ReleaseStringUTFChars(env, tunName, nativeString);
   return tun_alloc(tun_name, IFF_TUN | IFF_NO_PI);
 }
-

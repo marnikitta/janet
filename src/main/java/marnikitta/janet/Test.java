@@ -17,7 +17,7 @@ public class Test {
   public static void main(String... args) throws IOException {
     final long localLinkAddress = 0x32080803208080L;
     final int localNetworkAddress = IPPacket.parseIP("10.0.0.1");
-    final ByteChannel tunTap = TunTap.tun();
+    final ByteChannel tunTap = TunTap.tap("tun2");
 
     final EthernetProtocol ethernetProtocol = new EthernetProtocolImpl(localLinkAddress, tunTap);
     final ARPProtocol arpProtocol = new ARPProtocolImpl(localLinkAddress, localNetworkAddress, ethernetProtocol);

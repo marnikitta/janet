@@ -15,9 +15,9 @@ public final class TunTap {
     System.loadLibrary("tuntap");
   }
 
-  private static native int initTap();
+  private static native int initTap(String tapName);
 
-  private static native int initTun();
+  private static native int initTun(String tunName);
 
   private static FileDescriptor initDescriptor(int fd) {
     try {
@@ -31,12 +31,12 @@ public final class TunTap {
     }
   }
 
-  public static ByteChannel tun() throws IOException {
-    final int fs = initTap();
+  public static ByteChannel tap(String tapName) throws IOException {
+    final int fs = initTap(tapName);
     if (fs > 0) {
       return FileChannelImpl.open(initDescriptor(fs), "", true, true, null);
     } else {
-      throw new IOException("Unable to create a tun, err: " + fs);
+      throw new IOException("Unable to create a tap, err: " + fs);
     }
   }
 }
