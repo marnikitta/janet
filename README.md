@@ -3,11 +3,10 @@
 Janet is a userland network stack implementation. 
 
 The main goals of this project are:
-- Deeper understanding of TCP/IP stack.
+- The deeper understanding of TCP/IP stack.
 - Practicing writing Java copy-free garbage-free code
-- Trying in practice different concurrency programming techniques: Disruptor, queueing
 
-The memory-access patterns were inspired by [Aeron](https://github.com/real-logic/aeron) 
+Memory-access patterns were inspired by [Aeron](https://github.com/real-logic/aeron) 
 and [Simple Binary Encoding](https://github.com/real-logic/simple-binary-encoding).
 
 #### Roadmap
