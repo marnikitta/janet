@@ -72,6 +72,10 @@
                 </executions>
                 <configuration>
                     <executable>make</executable>
+                    <arguments>
+                        <argument>-f</argument>
+                        <argument>native.mk</argument>
+                    </arguments>
                 </configuration>
             </plugin>
         </plugins>
