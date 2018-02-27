@@ -7,6 +7,9 @@ The main goals of this project are:
 - Practicing writing Java copy-free garbage-free code
 - Trying in practice different concurrency programming techniques: Disruptor, queueing
 
+The memory-access patterns were inspired by [Aeron](https://github.com/real-logic/aeron) 
+and [Simple Binary Encoding](https://github.com/real-logic/simple-binary-encoding).
+
 #### Roadmap
 
 1. [x] Link-layer

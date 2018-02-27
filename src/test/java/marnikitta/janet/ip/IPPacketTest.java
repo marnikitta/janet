@@ -17,11 +17,11 @@ public class IPPacketTest {
 
   @Test(dataProvider = "stringToIP")
   public void testParseIP(String nice, int ip) {
-    Assert.assertEquals(IPPacket.parseIP(nice), ip);
+    Assert.assertEquals(IPPacketDecoder.parseIP(nice), ip);
   }
 
   @Test(dataProvider = "stringToIP")
   public void testNiceIP(String nice, int ip) {
-    Assert.assertEquals(IPPacket.niceIP(ip), nice);
+    Assert.assertEquals(IPPacketDecoder.niceIP(ip), nice);
   }
 }

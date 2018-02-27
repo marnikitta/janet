@@ -1,9 +1,18 @@
 package marnikitta.janet.ip;
 
-import java.util.function.Consumer;
+import marnikitta.janet.PDUHandler;
+import marnikitta.janet.util.BufferClaim;
 
-public interface IPProtocol extends Consumer<IPPacket> {
-  IPPacket next();
+import java.nio.ByteBuffer;
 
-  void commit(int dest, IPPacket.Protocol protocol, IPPacket packet);
+public class IPProtocol implements PDUHandler {
+  private final IPPacketDecoder ipDecoder = new IPPacketDecoder();
+
+  @Override
+  public void onPDU(ByteBuffer buffer, int offset, int length) {
+    ipDecoder.wrap(buffer, offset);
+    assert ipDecoder.wrap(buffer, offset).hasValidChecksum();
+
+    System.out.println(ipDecoder);
+  }
 }
