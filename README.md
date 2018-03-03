@@ -35,5 +35,5 @@ sudo addr add 10.0.0.1/24 dev tun2
 Then run with:
 
 ```bash
-java -jar janet.jar
+java -Djava.library.path=target -cp target/janet-1.0-SNAPSHOT.jar marnikitta.janet.Test
 ```
