@@ -11,10 +11,10 @@ and [Simple Binary Encoding](https://github.com/real-logic/simple-binary-encodin
 
 #### Roadmap
 
-1. [x] Link-layer
+1. [x] Ethernet
 2. [x] ARP
-3. [ ] IP
-4. [ ] ICMP
+3. [x] IP
+4. [x] ICMP
 5. [ ] UDP
 6. [ ] Performance tuning
 7. [ ] Multiple back-off strategies
