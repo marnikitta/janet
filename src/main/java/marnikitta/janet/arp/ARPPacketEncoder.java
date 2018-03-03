@@ -6,9 +6,10 @@ import java.nio.ByteBuffer;
 
 public class ARPPacketEncoder extends ARPPacketDecoder {
   @Override
-  public ARPPacketEncoder wrap(ByteBuffer buffer, int offset) {
+  public ARPPacketEncoder wrap(ByteBuffer buffer, int offset, int length) {
     this.buffer = buffer;
     this.offset = offset;
+    this.length = length;
     buffer.putShort(offset + HARDWARE_TYPE_OFFSET, (short) 1);
     buffer.putShort(offset + PROTOCOL_TYPE_OFFSET, (short) 0x0800);
     buffer.put(offset + HARDWARE_ADDRESS_LENGTH_OFFSET, (byte) 6);

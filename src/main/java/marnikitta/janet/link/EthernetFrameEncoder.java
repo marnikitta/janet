@@ -1,12 +1,15 @@
 package marnikitta.janet.link;
 
+import marnikitta.janet.util.BufferClaim;
+
 import java.nio.ByteBuffer;
 
 public class EthernetFrameEncoder extends EthernetFrameDecoder {
   @Override
-  public EthernetFrameEncoder wrap(ByteBuffer buffer, int offset) {
+  public EthernetFrameEncoder wrap(ByteBuffer buffer, int offset, int length) {
     this.buffer = buffer;
     this.offset = offset;
+    this.length = length;
     return this;
   }
 

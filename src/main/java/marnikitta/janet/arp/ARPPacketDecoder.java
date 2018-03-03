@@ -20,11 +20,13 @@ public class ARPPacketDecoder implements Flyweight {
 
   protected ByteBuffer buffer;
   protected int offset;
+  protected int length;
 
   @Override
-  public ARPPacketDecoder wrap(ByteBuffer buffer, int offset) {
+  public ARPPacketDecoder wrap(ByteBuffer buffer, int offset, int length) {
     this.buffer = buffer;
     this.offset = offset;
+    this.length = length;
     return this;
   }
 

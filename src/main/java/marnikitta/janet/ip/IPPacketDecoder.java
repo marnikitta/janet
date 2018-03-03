@@ -1,5 +1,6 @@
 package marnikitta.janet.ip;
 
+import marnikitta.janet.util.Checksum;
 import marnikitta.janet.util.Flyweight;
 
 import java.nio.ByteBuffer;
@@ -8,21 +9,27 @@ import java.util.stream.Stream;
 
 public class IPPacketDecoder implements Flyweight {
   protected static final int VERSION_OFFSET = 0;
+  protected static final int DS_OFFSET = 1;
   protected static final int TOTAL_LENGTH_OFFSET = 2;
   protected static final int IDENTIFICATION_OFFSET = 4;
+  protected static final int OFFSET_OFFSET = 6;
   protected static final int TTL_OFFSET = 8;
   protected static final int PROTOCOL_OFFSET = 9;
   protected static final int HEADER_CHECKSUM_OFFSET = 10;
   protected static final int SOURCE_ADDRESS_OFFSET = 12;
   protected static final int DESTINATION_ADDRESS_OFFSET = 16;
 
+  public static final int HEADER_SIZE = 20;
+
   protected ByteBuffer buffer;
   protected int offset;
+  protected int length;
 
   @Override
-  public IPPacketDecoder wrap(ByteBuffer buffer, int offset) {
+  public IPPacketDecoder wrap(ByteBuffer buffer, int offset, int length) {
     this.buffer = buffer;
     this.offset = offset;
+    this.length = length;
     return this;
   }
 
@@ -63,20 +70,11 @@ public class IPPacketDecoder implements Flyweight {
   }
 
   public boolean hasValidChecksum() {
-    return headerChecksum() == evalChecksum();
+    return evalChecksum() == 0;
   }
 
   protected short evalChecksum() {
-    final int length = headerLength();
-    int partialSum = 0;
-    for (int i = 0; i < length * 2; ++i) {
-      if (i != 5) {
-        final short word = buffer.getShort(offset + i * Short.BYTES);
-        partialSum += Short.toUnsignedInt(word);
-      }
-    }
-    final int result = (partialSum & 0xFFFF) + (partialSum >>> Short.SIZE & 0xFFFF);
-    return (short) ~result;
+    return Checksum.internetChecksum(buffer, offset, headerLength() * Integer.BYTES);
   }
 
   @Override

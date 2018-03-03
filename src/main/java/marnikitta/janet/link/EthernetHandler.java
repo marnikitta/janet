@@ -7,62 +7,59 @@ import marnikitta.janet.util.BufferClaim;
 import java.nio.ByteBuffer;
 import java.util.EnumMap;
 import java.util.Map;
+import java.util.concurrent.locks.LockSupport;
 
-public class EthernetProtocol implements Runnable, PDUHandler {
+import static marnikitta.janet.link.EthernetFrameDecoder.HEADER_SIZE;
+
+public class EthernetHandler implements Runnable, PDUHandler {
   private final Map<EtherType, PDUHandler> protocols = new EnumMap<>(EtherType.class);
   private final JanetChannel channel;
   private final long localLinkAddress;
 
   private final EthernetFrameEncoder frameEncoder = new EthernetFrameEncoder();
   private final EthernetFrameDecoder frameDecoder = new EthernetFrameDecoder();
-  private final BufferClaim etherClaim = new BufferClaim();
 
-  public EthernetProtocol(long localLinkAddress, JanetChannel channel) {
+  public EthernetHandler(long localLinkAddress, JanetChannel channel) {
     this.localLinkAddress = localLinkAddress;
     this.channel = channel;
   }
 
   public void claim(long dest, EtherType type, int length, BufferClaim claim) {
-    channel.claim(etherClaim, length + EthernetFrameDecoder.HEADER_SIZE);
-    frameEncoder.wrap(etherClaim.buffer(), etherClaim.offset())
+    channel.claim(claim, length + HEADER_SIZE);
+    assert length + HEADER_SIZE == claim.length();
+
+    frameEncoder.wrap(claim.buffer(), claim.offset(), claim.length())
       .withDestinationLinkAddress(dest)
       .withEtherType(type)
       .withSourceLinkAddress(localLinkAddress);
-    claim.wrap(etherClaim.buffer(), etherClaim.offset() + EthernetFrameDecoder.HEADER_SIZE, length);
+    claim.reserveForHeader(HEADER_SIZE);
   }
 
   public void commit(BufferClaim claim) {
-    channel.commit(etherClaim);
+    channel.commit(claim.free(HEADER_SIZE));
   }
 
-  public void registerProtocol(EtherType type, PDUHandler handler) {
+  public void register(EtherType type, PDUHandler handler) {
     protocols.put(type, handler);
   }
 
   @Override
   public void onPDU(ByteBuffer buffer, int offset, int length) {
-    frameDecoder.wrap(buffer, offset);
+    frameDecoder.wrap(buffer, offset, length);
     final EtherType type = frameDecoder.etherType();
     if (protocols.containsKey(type)) {
       protocols.get(type).onPDU(
         buffer,
-        offset + EthernetFrameDecoder.HEADER_SIZE,
-        length - EthernetFrameDecoder.HEADER_SIZE
+        offset + HEADER_SIZE,
+        length - HEADER_SIZE
       );
-    } else {
-      System.out.println(frameDecoder);
     }
   }
 
   @Override
   public void run() {
     while (true) {
-      try {
-        channel.poll(this);
-        Thread.sleep(1000);
-      } catch (InterruptedException e) {
-        throw new RuntimeException(e);
-      }
+      channel.poll(this);
     }
   }
 }

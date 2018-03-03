@@ -12,11 +12,13 @@ public class EthernetFrameDecoder implements Flyweight {
 
   protected ByteBuffer buffer;
   protected int offset;
+  protected int length;
 
   @Override
-  public EthernetFrameDecoder wrap(ByteBuffer buffer, int offset) {
+  public EthernetFrameDecoder wrap(ByteBuffer buffer, int offset, int length) {
     this.buffer = buffer;
     this.offset = offset;
+    this.length = length;
     return this;
   }
 

@@ -23,6 +23,7 @@ public class JanetChannel {
   }
 
   public void claim(BufferClaim claim, int length) {
+    sendBuffer.clear();
     sendBuffer.limit(length);
     claim.wrap(sendBuffer, 0, length);
   }

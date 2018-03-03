@@ -4,9 +4,17 @@ import java.nio.ByteBuffer;
 
 public class IPPacketEncoder extends IPPacketDecoder {
   @Override
-  public IPPacketEncoder wrap(ByteBuffer buffer, int offset) {
+  public IPPacketEncoder wrap(ByteBuffer buffer, int offset, int length) {
     this.buffer = buffer;
     this.offset = offset;
+    this.length = length;
+
+    buffer.put(offset + VERSION_OFFSET, (byte) 0x45);
+    buffer.putShort(offset + OFFSET_OFFSET, (short) 0);
+    buffer.put(offset + DS_OFFSET, (byte) 0);
+    buffer.putShort(offset + HEADER_CHECKSUM_OFFSET, (short) 0);
+    buffer.putShort(offset + TOTAL_LENGTH_OFFSET, (short) length);
+
     return this;
   }
 
@@ -35,15 +43,7 @@ public class IPPacketEncoder extends IPPacketDecoder {
     return this;
   }
 
-  public void build() {
-    buffer.put(VERSION_OFFSET, (byte) 0x45);
-
-    final int size = buffer.remaining();
-    if (0 <= size && size <= 0xFFFF) {
-      buffer.putShort(TOTAL_LENGTH_OFFSET, (short) size);
-    } else {
-      throw new IllegalArgumentException("IP overflow");
-    }
+  public void withChecksum() {
     buffer.putShort(offset + HEADER_CHECKSUM_OFFSET, evalChecksum());
   }
 }

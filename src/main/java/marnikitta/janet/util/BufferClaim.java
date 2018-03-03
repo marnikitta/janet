@@ -14,6 +14,24 @@ public class BufferClaim {
     return this;
   }
 
+  public BufferClaim withOffset(int offset) {
+    this.offset = offset;
+    return this;
+  }
+
+  public BufferClaim withLength(int length) {
+    this.length = length;
+    return this;
+  }
+
+  public BufferClaim reserveForHeader(int headerLength) {
+    return withLength(length - headerLength).withOffset(offset + headerLength);
+  }
+
+  public BufferClaim free(int headerLength) {
+    return withLength(length + headerLength).withOffset(offset - headerLength);
+  }
+
   public ByteBuffer buffer() {
     return buffer;
   }
