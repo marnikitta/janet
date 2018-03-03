@@ -110,6 +110,7 @@ public class IPHandler implements PDUHandler {
       return false;
     }
     if (ipDecoder.ttl() == 0) {
+      // TODO: 3/3/18 Time exceeded ICMP message
       return false;
     }
 
