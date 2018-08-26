@@ -11,16 +11,17 @@ and [Simple Binary Encoding](https://github.com/real-logic/simple-binary-encodin
 
 #### Roadmap
 
-1. [x] Ethernet
-2. [x] ARP
-3. [x] IP
-4. [x] ICMP
-5. [ ] UDP
-6. [ ] Performance tuning
-7. [ ] Multiple back-off strategies
-8. [ ] TCP
-9. [ ] Congestion control
-10. [ ] Network driver API
+- [x] Ethernet
+- [x] ARP
+- [x] IP
+- [x] ICMP
+- [ ] Network driver API
+- [ ] Integration test (docker, `lo` UDP nc)
+- [ ] UDP
+- [ ] Performance tuning
+- [ ] Multiple back-off strategies
+- [ ] TCP
+- [ ] Congestion control
 
 #### Getting started
 
@@ -35,6 +36,6 @@ sudo addr add 10.0.0.1/24 dev tun2
 Then run with:
 
 ```bash
-java -Djava.library.path=target -cp target/janet-1.0-SNAPSHOT.jar marnikitta.janet.Test
+java -Djava.library.path=driver/target -cp driver/target/janet-1.0-SNAPSHOT.jar marnikitta.janet.Test
 ```
 

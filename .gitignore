@@ -1,3 +1,5 @@
 .idea
-janet.iml
 target/
+janet.iml
+driver/janet-driver.iml
+driver/target

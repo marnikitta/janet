@@ -34,6 +34,7 @@ public final class TunTap {
   public static ByteChannel tap(String tapName) throws IOException {
     final int fs = initTap(tapName);
     if (fs > 0) {
+      // Reads and writes are not concurrent. There is a monitor that protects reads and writes
       return FileChannelImpl.open(initDescriptor(fs), "", true, true, null);
     } else {
       throw new IOException("Unable to create a tap, err: " + fs);
